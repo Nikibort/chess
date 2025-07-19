@@ -2,7 +2,7 @@ name: Transport Scheduler
 
 on:
   schedule:
-    - cron: '*/15 * * * *'    # every 30 minutes
+    - cron: '*/25 * * * *'    # every 15 minutes
   workflow_dispatch:
 
 jobs:
@@ -25,10 +25,18 @@ jobs:
 
       - name: Write service account JSON
         run: |
-          echo "${{ secrets.GOOGLE_SERVICE_JSON }}" > server/utils/auth.json
+          # Convert any “\n” escapes back into real newlines:
+          printf '%b' "${{ secrets.GOOGLE_SERVICE_JSON }}" \
+            > server/utils/auth.json
+
+      - name: Debug auth.json        # ← optional, but very useful
+        run: |
+          echo '--- START auth.json ---'
+          sed -e 's/$/↵/' server/utils/auth.json | head -n 20
+          echo '---- END auth.json ----'
 
       - name: Run transport scheduler
-        run: node run-scheduler.js
+        run: node scheduler/index.js
         env:
           SOURCE_SHEET_ID: ${{ secrets.SOURCE_SHEET_ID }}
           DEST_SHEET_ID:   ${{ secrets.DEST_SHEET_ID }}
