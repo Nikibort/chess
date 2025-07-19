@@ -28,7 +28,7 @@ jobs:
           echo "${{ secrets.GOOGLE_SERVICE_JSON }}" > server/utils/auth.json
 
       - name: Run transport scheduler
-        run: node scheduler/index.js
+        run: node run-scheduler.js
         env:
           SOURCE_SHEET_ID: ${{ secrets.SOURCE_SHEET_ID }}
           DEST_SHEET_ID:   ${{ secrets.DEST_SHEET_ID }}
